@@ -14,24 +14,15 @@ var ip = '127.0.0.1';
 var server = http.createServer(function(req, res) {
 
 
-  if (req.url === '/') {
+  helper.serveAssets(res, __dirname + '/public/index.html', function(asset) {
+    return asset.path.basename.split('.')[1];
+  
+  });
 
-    helper.serveAssets(res, __dirname + '/public/index.html', function(fileEnd) {
-      return fileEnd.split('.')[1];
-    });
-
-  } else if (req.url === '/styles.css') {
-
-    helper.serveAssets(res, __dirname + '/public/styles.css', function(fileEnd) {
-      return fileEnd.split('.')[1];
-    });
-
-  }
-
-   
+  
 
   // handler.handleRequest(req, res)
-
+  
 });
 
 if (module.parent) {
