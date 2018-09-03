@@ -46,13 +46,16 @@ exports.handleRequest = function (req, res) {
 
       var fileUrl = buffer.split('=')[1];
 
-      console.log('URL: ', fileUrl);
+      fs.appendFileSync(archive.paths.list, fileUrl + '\n');
 
-      fs.appendFileSync(archive.paths.list, '\n' + fileUrl);
+      res.writeHead(302, {'Content-type': 'text/html'});
 
+      res.end();
+    
     });
 
   } else {
+
     res.writeHead(404, {'Content-type': 'text/css'});
 
     res.end('Page not found');

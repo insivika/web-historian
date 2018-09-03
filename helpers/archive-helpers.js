@@ -26,7 +26,16 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
-};
+
+  console.log('test');
+  
+  var urls = fs.readFileSync(__dirname, '../archives/sites.txt', 'utf8');
+
+  console.log(urls);
+
+  return urls;
+  
+}; '';
 
 exports.isUrlInList = function(url, callback) {
 };
