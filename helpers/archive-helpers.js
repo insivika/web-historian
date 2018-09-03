@@ -27,15 +27,16 @@ exports.initialize = function(pathsObj) {
 
 exports.readListOfUrls = function(callback) {
 
-  console.log('test');
-  
-  var urls = fs.readFileSync(__dirname, '../archives/sites.txt', 'utf8');
+  fs.readFile(this.paths.list, 'utf8', (err, data)=>{
 
-  console.log(urls);
+    console.log('data: ', data.split('\n'));
 
-  return urls;
+   
+    callback(data.split('\n'));
+
+  });
   
-}; '';
+};
 
 exports.isUrlInList = function(url, callback) {
 };
