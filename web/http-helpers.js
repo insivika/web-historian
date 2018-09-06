@@ -10,15 +10,32 @@ exports.headers = {
   'Content-Type': 'text/html'
 };
 
-exports.serveAssets = function(res, asset, callback) {
+exports.serveArchivedSites = function(res, asset, callback) {
 
-  res.writeHead(200, callback(path.basename(asset)));
- 
-  var readStream = fs.createReadStream(asset, 'utf8');
+  fs.readFile(archive.paths.archivedSites + '/' + asset, (err, data) =>{
 
-  readStream.pipe(res);
-  
+    callback(data);
+
+    res.writeHead(302, {'Content-type': 'text/html'});
+
+    res.end(data);
+
+  });
+
 }; 
+
+exports.serveLoadingfile = function(res, callback) {
+
+  fs.readFile(archive.paths.siteAssets + '/loading.html', (err, data) => {
+
+    callback(data);
+    
+    res.writeHead(302, {'Content-type': 'text/html'});
+    
+    res.end(data);
+  
+  });
+};
 
 
 

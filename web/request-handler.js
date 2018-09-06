@@ -1,6 +1,7 @@
 var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var fs = require('fs');
+var httpHelpers = require('./http-helpers');
 
 
 // require more modules/folders here!
@@ -16,8 +17,6 @@ exports.handleRequest = function (req, res) {
       fs.createReadStream(archive.paths.siteAssets + '/index.html', 'utf8').pipe(res);
 
     } else if (req.url === '/styles.css') {
-
-      console.log('Style');
 
       res.writeHead(200, {'Content-type': 'text/css'});
   
@@ -35,7 +34,7 @@ exports.handleRequest = function (req, res) {
     }
       
   } else if (req.method === 'POST') {
-
+  
     var buffer = '';
 
     req.on('data', (chunk)=>{
@@ -46,13 +45,24 @@ exports.handleRequest = function (req, res) {
 
       var fileUrl = buffer.split('=')[1];
 
-      fs.appendFileSync(archive.paths.list, fileUrl + '\n');
+      archive.isUrlArchived(fileUrl, function(answer) {
+        
+        if (answer) {
 
-      res.writeHead(302, {'Content-type': 'text/html'});
+          // fetch and serve the html
+          httpHelpers.serveArchivedSites(res, fileUrl, ()=>{});
 
-      res.end();
-    
+        } else {
+
+          // add to text file and serve loading.html
+          archive.addUrlToList(fileUrl, () => {});
+
+          httpHelpers.serveLoadingfile(res, () => []);
+
+        }
+      });
     });
+    // if url does exist in database serve html from archive
 
   } else {
 
