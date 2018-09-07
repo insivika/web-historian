@@ -45,28 +45,47 @@ exports.handleRequest = function (req, res) {
 
       var fileUrl = buffer.split('=')[1];
 
-      archive.isUrlArchived(fileUrl, function(answer) {
+      if (fileUrl !== undefined) {
+
+        if (fileUrl.slice(0, 3) === 'www') {
         
-        if (answer) {
-
-          // fetch and serve the html
-          httpHelpers.serveArchivedSites(res, fileUrl, ()=>{});
-
+          archive.isUrlArchived(fileUrl, function(answer) {
+         
+            if (answer) {
+ 
+              // fetch and serve the html
+              httpHelpers.serveArchivedSites(res, fileUrl, ()=>{});
+ 
+            } else {
+ 
+              // add to text file and serve loading.html
+              archive.addUrlToList(fileUrl, () => {});
+ 
+              httpHelpers.serveLoadingfile(res, () => []);
+ 
+            }
+          });
+ 
         } else {
+          res.writeHead(301, {'Content-type': 'text/html'});
 
-          // add to text file and serve loading.html
-          archive.addUrlToList(fileUrl, () => {});
-
-          httpHelpers.serveLoadingfile(res, () => []);
-
+          fs.createReadStream(archive.paths.siteAssets + '/index.html', 'utf8').pipe(res);
         }
-      });
+        
+      } else {
+
+        res.writeHead(301, {'Content-type': 'text/html'});
+
+        fs.createReadStream(archive.paths.siteAssets + '/index.html', 'utf8').pipe(res);
+
+      }
     });
+
     // if url does exist in database serve html from archive
 
   } else {
 
-    res.writeHead(404, {'Content-type': 'text/css'});
+    res.writeHead(404, {'Content-type': 'text/plain'});
 
     res.end('Page not found');
   }
